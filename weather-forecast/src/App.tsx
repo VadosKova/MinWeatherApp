@@ -62,10 +62,23 @@ const App: React.FC = () => {
   }, [weatherData, city]);
 
   return (
-    <>
+    <div className="app">
+      <h2>Min Weather App</h2>
+
+      <div className="input-block">
+        <input
+          ref={inputRef}
+          type="text"
+          placeholder="Enter city"
+          value={city}
+          onChange={(e) => setCity(e.target.value)}
+        />
+        <button onClick={() => getWeather()}>Get Weather</button>
+      </div>
+
       
-    </>
-  )
+    </div>
+  );
 }
 
 export default App
