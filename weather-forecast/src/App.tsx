@@ -51,6 +51,16 @@ const App: React.FC = () => {
     }
   };
 
+  useEffect(() => {
+    if (!weatherData) return;
+
+    const interval = setInterval(() => {
+      getWeather();
+    }, 60000);
+
+    return () => clearInterval(interval);
+  }, [weatherData, city]);
+
   return (
     <>
       
