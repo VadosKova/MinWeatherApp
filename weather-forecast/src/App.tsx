@@ -37,6 +37,18 @@ const App: React.FC = () => {
         humidity: data.main.humidity,
         wind: data.wind.speed,
       });
+
+      setHistory((prev) => {
+        const updated = [targetCity, ...prev.filter((c) => c !== targetCity)].slice(0, 5);
+        localStorage.setItem("cityHistory", JSON.stringify(updated));
+        return updated;
+      });
+      
+      setRequestCount((prev) => prev + 1);
+    } catch (err) {
+      setError("City not found");
+      setWeatherData(null);
+    }
   };
 
   return (
