@@ -21,6 +21,24 @@ const App: React.FC = () => {
     }
   }, []);
 
+  const getWeather = async (selectedCity?: string) => {
+    const targetCity = selectedCity || city.trim();
+    if (!targetCity) return;
+
+    try {
+      setError("");
+      const { data } = await axios.get(
+        `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${API_KEY}&units=metric`
+      );
+
+      setWeatherData({
+        temp: data.main.temp,
+        description: data.weather[0].description,
+        humidity: data.main.humidity,
+        wind: data.wind.speed,
+      });
+  };
+
   return (
     <>
       
