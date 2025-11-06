@@ -90,3 +90,21 @@ h2 {
 .history li:hover {
   background: #e0e0e0;
 }
+
+.weather-card {
+  background: #f1f8e9;
+  border-radius: 12px;
+  padding: 15px;
+  margin-top: 10px;
+  line-height: 1.6;
+}
+
+.weather-card p {
+  text-align: left;
+  color: #333;
+}
+
+.counter {
+  margin-top: 15px;
+  font-weight: 600;
+}

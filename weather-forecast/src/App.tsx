@@ -90,6 +90,18 @@ const App: React.FC = () => {
           </ul>
         </div>
       )}
+
+      {weatherData && (
+        <div className="weather-card">
+          <h2>{city}</h2>
+          <p>Температура: {weatherData.temp} °C</p>
+          <p>Погода: {weatherData.description}</p>
+          <p>Влажность: {weatherData.humidity}%</p>
+          <p>Ветер: {weatherData.wind} м/с</p>
+        </div>
+      )}
+
+      <p className="counter">Запросов выполнено: {requestCount}</p>
     </div>
   );
 }
