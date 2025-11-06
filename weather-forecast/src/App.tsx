@@ -1,35 +1,109 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import { useState, useEffect, useRef } from 'react'
+import axios from 'axios'
 import './App.css'
 
-function App() {
-  const [count, setCount] = useState(0)
+const API_KEY = "2e9c3bf87483ba1dc8ff5d5e2b31433e";
+
+const App: React.FC = () => {
+  const [city, setCity] = useState("");
+  const [weatherData, setWeatherData] = useState<any | null>(null);
+  const [error, setError] = useState<string>("");
+  const [requestCount, setRequestCount] = useState(0);
+  const [history, setHistory] = useState<string[]>([]);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    inputRef.current?.focus();
+
+    const savedHistory = localStorage.getItem("cityHistory");
+    if (savedHistory) {
+      setHistory(JSON.parse(savedHistory));
+    }
+  }, []);
+
+  const getWeather = async (selectedCity?: string) => {
+    const targetCity = selectedCity || city.trim();
+    if (!targetCity) return;
+
+    try {
+      setError("");
+      const { data } = await axios.get(
+        `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${API_KEY}&units=metric`
+      );
+
+      setWeatherData({
+        temp: data.main.temp,
+        description: data.weather[0].description,
+        humidity: data.main.humidity,
+        wind: data.wind.speed,
+      });
+
+      setHistory((prev) => {
+        const updated = [targetCity, ...prev.filter((c) => c !== targetCity)].slice(0, 5);
+        localStorage.setItem("cityHistory", JSON.stringify(updated));
+        return updated;
+      });
+      
+      setRequestCount((prev) => prev + 1);
+    } catch (err) {
+      setError("City not found");
+      setWeatherData(null);
+    }
+  };
+
+  useEffect(() => {
+    if (!weatherData) return;
+
+    const interval = setInterval(() => {
+      getWeather();
+    }, 60000);
+
+    return () => clearInterval(interval);
+  }, [weatherData, city]);
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+    <div className="app">
+      <h2>Min Weather App</h2>
+
+      <div className="input-block">
+        <input
+          ref={inputRef}
+          type="text"
+          placeholder="Enter city"
+          value={city}
+          onChange={(e) => setCity(e.target.value)}
+        />
+        <button onClick={() => getWeather()}>Get Weather</button>
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+
+      {error && <p className="error">{error}</p>}
+
+      {history.length > 0 && (
+        <div className="history">
+          <p>История запросов:</p>
+          <ul>
+            {history.map((item, index) => (
+              <li key={index} onClick={() => getWeather(item)}>
+                {item}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {weatherData && (
+        <div className="weather-card">
+          <h2>{city}</h2>
+          <p>Температура: {weatherData.temp} °C</p>
+          <p>Погода: {weatherData.description}</p>
+          <p>Влажность: {weatherData.humidity}%</p>
+          <p>Ветер: {weatherData.wind} м/с</p>
+        </div>
+      )}
+
+      <p className="counter">Запросов выполнено: {requestCount}</p>
+    </div>
+  );
 }
 
 export default App
