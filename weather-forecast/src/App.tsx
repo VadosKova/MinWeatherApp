@@ -12,6 +12,15 @@ const App: React.FC = () => {
   const [history, setHistory] = useState<string[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
 
+  useEffect(() => {
+    inputRef.current?.focus();
+
+    const savedHistory = localStorage.getItem("cityHistory");
+    if (savedHistory) {
+      setHistory(JSON.parse(savedHistory));
+    }
+  }, []);
+
   return (
     <>
       
