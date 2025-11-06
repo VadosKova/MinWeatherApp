@@ -76,7 +76,20 @@ const App: React.FC = () => {
         <button onClick={() => getWeather()}>Get Weather</button>
       </div>
 
-      
+      {error && <p className="error">{error}</p>}
+
+      {history.length > 0 && (
+        <div className="history">
+          <p>История запросов:</p>
+          <ul>
+            {history.map((item, index) => (
+              <li key={index} onClick={() => getWeather(item)}>
+                {item}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </div>
   );
 }
